@@ -38,34 +38,43 @@ function connectBot() {
     setTimeout(() => {
       console.log('✅ Bot fully spawned and ready');
 
-      let jumping = false;
+    let forward = true;
+let currentX = 0;
+let baseY = 70;
+let z = 0;
 
-      setInterval(() => {
-        try {
-          jumping = !jumping;
-          const y = jumping ? 70.5 : 70.0;
+setInterval(() => {
+  try {
+    if (forward) {
+      currentX += 1;
+      if (currentX >= 4) forward = false;
+    } else {
+      currentX -= 1;
+      if (currentX <= 0) forward = true;
+    }
 
-          console.log(`🔁 Jumping ${jumping ? 'up' : 'down'} with entityId = ${entityId}`);
-          client.write('move_player', {
-            runtime_entity_id: entityId,
-            position: { x: 0.1, y, z: 0.1 },
-            rotation: { x: 0, y: 0, z: 0 },
-            pitch: 0,
-            head_yaw: 0,
-            yaw: 0,
-            mode: 0,
-            on_ground: !jumping,
-            ridden_runtime_entity_id: BigInt(0),
-            teleport_cause: 0,
-            teleport_item: 0,
-            entity_type: BigInt(1),
-            tick: BigInt(0)
-          });
-          console.log('✅ Jump move sent');
-        } catch (e) {
-          console.error('⚠️ Move send failed:', e.message);
-        }
-      }, 5000); // Jump every 5 seconds
+    console.log(`🚶 Bot walking to x=${currentX}`);
+    client.write('move_player', {
+      runtime_entity_id: entityId,
+      position: { x: currentX, y: baseY, z },
+      rotation: { x: 0, y: 0, z: 0 },
+      pitch: 0,
+      head_yaw: 0,
+      yaw: 0,
+      mode: 0,
+      on_ground: true,
+      ridden_runtime_entity_id: BigInt(0),
+      teleport_cause: 0,
+      teleport_item: 0,
+      entity_type: BigInt(1),
+      tick: BigInt(0)
+    });
+    console.log('✅ Move successfully sent to x =', currentX);
+  } catch (e) {
+    console.error('⚠️ Move send failed:', e.message);
+  }
+}, 5000); // Move every 5 seconds
+
     }, 3000);
   });
 
