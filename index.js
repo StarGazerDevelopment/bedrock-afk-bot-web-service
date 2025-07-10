@@ -38,25 +38,19 @@ function connectBot() {
     setTimeout(() => {
       console.log('✅ Bot fully spawned and ready');
 
-    let forward = true;
-let currentX = 0;
-let baseY = 70;
-let z = 0;
+    let x = 0;
+let direction = 1;
 
 setInterval(() => {
   try {
-    if (forward) {
-      currentX += 1;
-      if (currentX >= 4) forward = false;
-    } else {
-      currentX -= 1;
-      if (currentX <= 0) forward = true;
-    }
+    x += direction * 1;
 
-    console.log(`🚶 Bot walking to x=${currentX}`);
+    if (x > 4 || x < 0) direction *= -1;
+
+    console.log(`🚶 Bot walking to x=${x}`);
     client.write('move_player', {
       runtime_entity_id: entityId,
-      position: { x: currentX, y: baseY, z },
+      position: { x: x, y: 70, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
       pitch: 0,
       head_yaw: 0,
@@ -67,13 +61,14 @@ setInterval(() => {
       teleport_cause: 0,
       teleport_item: 0,
       entity_type: BigInt(1),
-      tick: BigInt(0)
+      tick: BigInt(Date.now()) // Use actual timestamp
     });
-    console.log('✅ Move successfully sent to x =', currentX);
+    console.log(`✅ Move successfully sent to x = ${x}`);
   } catch (e) {
     console.error('⚠️ Move send failed:', e.message);
   }
-}, 5000); // Move every 5 seconds
+}, 500); // Move every 0.5 seconds
+
 
     }, 3000);
   });
